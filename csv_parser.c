@@ -1,34 +1,22 @@
+#include "spy_parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-#define MAX_ROWS      500000
 #define MAX_LINE_LEN  4096
 #define MAX_COLS      64
-#define R_RISK_FREE   0.043
-
-typedef struct {
-    double S0;
-    double K;
-    double T;
-    double sigma;
-    double r;
-    double bid;
-    double ask;
-    double mid;
-} OptionContract;
 
 // trim whitespace
 static char *trim(char *s) {
-    if (!s){
+    if (!s) {
         return s;
     }
-    while (*s == ' ' || *s == '\t' || *s == '\r' || *s == '\n'){
+    while (*s == ' ' || *s == '\t' || *s == '\r' || *s == '\n') {
         s++;
     }
     char *end = s + strlen(s) - 1;
-    while (end > s && (*end == ' ' || *end == '\t' || *end == '\r' || *end == '\n')){
+    while (end > s && (*end == ' ' || *end == '\t' || *end == '\r' || *end == '\n')) {
         *end-- = '\0';
     }
     return s;
@@ -43,18 +31,18 @@ static int split_csv_line(char *line, char **tokens, int max_tokens) {
         if (*p == '"') {
             p++;
             tokens[count++] = p;
-            while (*p && *p != '"'){
+            while (*p && *p != '"') {
                 p++;
             } 
-            if (*p == '"'){
+            if (*p == '"') {
                 *p++ = '\0';
             }
-            if (*p == ','){
+            if (*p == ',') {
                 p++;
             } 
         } else {
             tokens[count++] = p;
-            while (*p && *p != ','){
+            while (*p && *p != ',') {
                 p++;
             }
             if (*p == ',') {
@@ -69,20 +57,15 @@ static int split_csv_line(char *line, char **tokens, int max_tokens) {
 
 // find column by name
 static int find_col(char **headers, int n, const char *name) {
-    for (int i = 0; i < n; i++){
-        if (strcmp(trim(headers[i]), name) == 0){
+    for (int i = 0; i < n; i++) {
+        if (strcmp(trim(headers[i]), name) == 0) {
             return i; 
         }
     }
-        
     return -1;
 }
 
-
-int parse_spy_csv(const char *filepath,
-                  OptionContract *contracts,
-                  int max_contracts)
-{
+int parse_spy_csv(const char *filepath, OptionContract *contracts, int max_contracts) {
     FILE *fp = fopen(filepath, "r");
     if (!fp) { fprintf(stderr, "ERROR: cannot open '%s'\n", filepath); return -1; }
 
@@ -133,7 +116,7 @@ int parse_spy_csv(const char *filepath,
 
     while (fgets(line, sizeof(line), fp) && loaded < max_contracts) {
         row_num++;
-        if (strlen(trim(line)) == 0){
+        if (strlen(trim(line)) == 0) {
             continue;
         }
 
@@ -179,31 +162,4 @@ int parse_spy_csv(const char *filepath,
     fclose(fp);
     printf("Done: %d loaded, %d skipped\n", loaded, skipped);
     return loaded;
-}
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <spy_options.csv>\n", argv[0]);
-        return 1;
-    }
-
-    OptionContract *contracts = malloc(MAX_ROWS * sizeof(OptionContract));
-    if (!contracts) { fprintf(stderr, "ERROR: out of memory\n"); return 1; }
-
-    int n = parse_spy_csv(argv[1], contracts, MAX_ROWS);
-    if (n <= 0) { free(contracts); return 1; }
-
-    int preview = n < 5 ? n : 5;
-    printf("\nFirst %d contracts:\n", preview);
-    printf("  %-10s %-10s %-8s %-8s %-8s %-8s %-8s\n",
-           "S0", "K", "T(yrs)", "sigma", "bid", "ask", "mid");
-    printf("  ------------------------------------------------------------------\n");
-    for (int i = 0; i < preview; i++) {
-        OptionContract *c = &contracts[i];
-        printf("  %-10.4f %-10.4f %-8.4f %-8.4f %-8.4f %-8.4f %-8.4f\n",
-               c->S0, c->K, c->T, c->sigma, c->bid, c->ask, c->mid);
-    }
-
-    free(contracts);
-    return 0;
 }
