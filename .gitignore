@@ -1,0 +1,66 @@
+*.csv
+# --- Compilations and Binaries ---
+*.o
+*.obj
+*.exe
+*.out
+*.app
+*.so
+*.a
+*.lib
+*.dll
+
+# CUDA specific binaries
+*.fatbin
+*.ptx
+*.cubin
+
+# --- Build Directories ---
+build/
+bin/
+obj/
+dist/
+
+# --- Dependency Management ---
+# If using CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+_deps/
+
+# --- IDE and Editors ---
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# CLion / JetBrains
+.idea/
+cmake-build-debug/
+cmake-build-release/
+
+# Text editors
+*~
+*.swp
+.DS_Store
+
+# --- Logs and Debugging ---
+*.log
+*.tlog
+*.lastbuildstate
+# CUDA Profiler outputs
+*.nvvp
+*.nsight-cuprof-report
