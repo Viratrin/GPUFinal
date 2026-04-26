@@ -61,7 +61,7 @@ __global__ void mc_pricer_kernel(
 
     // initialise per-thread RNG state
     curandState state;
-    curand_init(1234ULL + (unsigned long long)idx, 0ULL, 0ULL, &state);
+    curand_init(1234ULL, (unsigned long long)idx, 0ULL, &state);
 
     // simulate N_PATHS paths and accumulate payoffs
     double payoff_sum = 0.0;
